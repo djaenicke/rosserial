@@ -89,3 +89,8 @@ rosserial_client_copy_files(rospack, output_path)
 
 # generate messages
 rosserial_generate(rospack, output_path, ROS_TO_EMBEDDED_TYPES)
+os.rename(os.path.join(output_path, "ros", "time.h"), os.path.join(output_path, "ros", "time_ros.h"))
+os.rename(os.path.join(output_path, "std_msgs", "Time.h"), os.path.join(output_path, "std_msgs", "Time_ROS.h"))
+os.rename(os.path.join(output_path, "std_msgs", "String.h"), os.path.join(output_path, "std_msgs", "String_ROS.h"))
+
+
