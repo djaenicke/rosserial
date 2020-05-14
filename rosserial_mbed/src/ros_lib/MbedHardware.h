@@ -3,6 +3,7 @@
  *
  *  Created on: Aug 17, 2011
  *      Author: nucho
+ *      Modified by: djaenicke
  */
 
 #ifndef ROS_MBED_HARDWARE_H_
@@ -10,51 +11,53 @@
 
 #include "mbed.h"
 
+#include "config.h"
 #include "BufferedSerial.h"
 
 class MbedHardware {
-  public:
-    MbedHardware(PinName tx, PinName rx, long baud = 57600)
-      :iostream(tx, rx){
-      baud_ = baud;
-      t.start();
+ public:
+  MbedHardware():iostream_(ROS_TX, ROS_RX) {
+    baud_ = 57600;
+    t_.start();
+  }
+
+  void SetBaud(long baud) {
+    this->baud_ = baud;
+  }
+
+  int GetBaud(void)
+  {
+    return baud_;
+  }
+
+  void init(void) {
+    iostream_.baud(baud_);
+  }
+
+  int read(void) {
+    int ret_val = -1;
+
+    if (iostream_.readable()) {
+      ret_val = iostream_.getc();
     }
 
-    MbedHardware()
-      :iostream(USBTX, USBRX) {
-        baud_ = 57600;
-        t.start();
+    return (ret_val);
+  };
+  
+  void write(uint8_t* data, int length) {
+    for (int i = 0; i < length; i++) {
+      iostream_.putc(data[i]);
     }
+  }
 
-    void setBaud(long baud){
-      this->baud_= baud;
-    }
-
-    int getBaud(){return baud_;}
-
-    void init(){
-        iostream.baud(baud_);
-    }
-
-    int read(){
-        if (iostream.readable()) {
-            return iostream.getc();
-        } else {
-            return -1;
-        }
-    };
-    void write(uint8_t* data, int length) {
-        for (int i=0; i<length; i++)
-             iostream.putc(data[i]);
-    }
-
-    unsigned long time(){return t.read_ms();}
+  unsigned long time() {
+    return t_.read_ms();
+  }
 
 protected:
-    BufferedSerial iostream;
-    long baud_;
-    Timer t;
+  BufferedSerial iostream_;
+  long baud_;
+  Timer t_;
 };
-
 
 #endif /* ROS_MBED_HARDWARE_H_ */
